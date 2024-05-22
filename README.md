@@ -1,8 +1,8 @@
 ## How to start the app
-Step 1: run Android AVD
-Step 2: enter project directory via terminal or commands
-Step 3: npm install
-Step 4: npm run android
+1. run Android AVD
+2. enter project directory via terminal or commands
+3. npm install
+4. npm run android
 
 #### Shutdown app
 Ctrl + C
