@@ -4,35 +4,14 @@ const express = require("express");
 const app = express();
 const port = 3000;
 
-const { MongoClient } = require("mongodb");
+const Datastore = require("nedb"); // https://github.com/louischatriot/nedb#readme
+const db = new Datastore({ filename: "./parkings.db", autoload: true });
 
-// Connection URL
-const url = "mongodb://localhost:" + port;
-const client = new MongoClient(url);
+// // Insert a document
+// db.insert({ name: "Jane Doe", age: 25 }, function (err, newDoc) {
+//   console.log(newDoc);
+// });
 
-// Database Name
-const dbName = "bikeParking";
-
-async function main() {
-  // Use connect method to connect to the server
-  await client.connect();
-  console.log("Connected successfully to server");
-  const db = client.db(dbName);
-  const collection = db.collection("parkings");
-
-  // TODO:
-
-  return "done.";
-}
-
-main()
-  .then(console.log)
-  .catch(console.error)
-  .finally(() => client.close());
-
-
-
-  
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
@@ -42,7 +21,12 @@ app.get("/", (req, res) => {
 });
 
 app.get("/getParkings", (req, res) => {
-  res.send("TODO: get parkings from mongodb and return them as json");
+  // TODO: get parkings from mongodb, sort using address, and return them as json
+
+  // This is how you can get all the parkings from the database
+  db.find({}, (err, docs) => {
+    res.json(docs);
+  });
 });
 app.post("/setParking", (req, res) => {
   res.send(
