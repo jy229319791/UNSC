@@ -17,7 +17,7 @@ export default function TabTwoScreen({ navigation }) {
       
       <Button onPress={navigation.openDrawer} title="Location"/>
 
-      <Button onPress={navigation.openDrawer} title="Images"/>
+      <Button onPress={navigation.openDrawer} title="Image"/>
 
       <TextInput
         style={styles.input}
