@@ -56,6 +56,7 @@ export default function TabTwoScreen({ navigation }) {
         <TextInput
           style={styles.input}
           onChangeText={onChangeText}
+          placeholder="Address bike parking"
           value={text1}
         />
         
@@ -63,6 +64,7 @@ export default function TabTwoScreen({ navigation }) {
         <TextInput
           style={styles.input}
           onChangeText={onChangeText}
+          placeholder="Title name"
           value={text2}
         />     
 
@@ -70,6 +72,7 @@ export default function TabTwoScreen({ navigation }) {
         <TextInput
           style={styles.input}
           onChangeText={onChangeText}
+          placeholder="Your name"
           value={text3}
         />
 
@@ -78,6 +81,7 @@ export default function TabTwoScreen({ navigation }) {
           style={styles.input}
           keyboardType='numeric'
           onChangeText={onChangeText}
+          placeholder="1-5"
           value={text4}
         />
 
@@ -86,6 +90,7 @@ export default function TabTwoScreen({ navigation }) {
           style={styles.input}
           onChangeText={onChangeText}
           onKeyPress={e => handleKeyPress(e)}
+          placeholder="Biking park description"
           value={text5}
         />
         
@@ -93,6 +98,7 @@ export default function TabTwoScreen({ navigation }) {
         <TextInput
           style={styles.input}
           onChange={e => setName(e.target.value)}
+          placeholder="Any tags"
           value={name}   
         />   
         
