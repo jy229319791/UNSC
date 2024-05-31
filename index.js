@@ -15,7 +15,7 @@ app.listen(port, () => {
 });
 
 app.get("/", (req, res) => {
-  res.send("Try /getParkings or /setParking instead! ");
+  res.send("Try /getParkings, /setParking, or/findParking instead! ");
 });
 
 app.get("/getParkings", (req, res) => {
@@ -61,27 +61,28 @@ db.insert(newParking, function (err, newDoc){
 
 //Ying
 //function to calculate the distance in miles.
-function distance(lat1, lon1, lat2, lon2){
-  function Radius(x) {
+function distance(lat1, lon1, lat2, lon2) {
+  function radius(x) {
     return x * Math.PI / 180;
-  } 
+  }
 
   const R = 3959; //radius in miles
-  const dLat = Radius(lat2 - lat1);
-  const dLon = Radius(lon2 - lon1);
-  const a = Math.sin(dLat /2) *Math.sin(dLat /2 )+ Math.cos(Radius(Lat1))*Math.cos(Radius(lat2))* Math.sin (dLon /2) *Math.sin(dLon /2);
-
-  const b = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  const distance = R* b;
+  const dLat = radius(lat2 - lat1);
+  const dLon = radius(lon2 - lon1);
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(radius(lat1)) * Math.cos(radius(lat2)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c;
   return distance;
 }
 
 app.get("/findParking", (req, res) => {
-  const {x,y} = req.query;
-  const max = 5; //max distance 5 miles
+  const { x, y } = req.query;
+  const maxDistance = 5; // max distance in miles
 
-  if(!x || !y){
-    res.status(400).send("Missing Latitude and Longitude.");
+  if (!x || !y) {
+    res.status(400).send("Missing latitude or longitude in query");
     return;
   }
 
@@ -93,7 +94,6 @@ app.get("/findParking", (req, res) => {
       res.status(500).json({ error: err.message });
       return;
     }
-
     const nearestParkings = parkings.filter(parking => {
       return distance(lat, lon, parseFloat(parking.xLocation), parseFloat(parking.yLocation)) <= maxDistance;
     });
