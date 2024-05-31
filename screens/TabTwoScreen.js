@@ -1,14 +1,46 @@
 
 import React from 'react';
-import { StyleSheet, Button, TextInput, ScrollView } from "react-native";
+import { StyleSheet, Button, TextInput, ScrollView, useState } from "react-native";
 
 import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, View} from "../components/Themed";
 
+let nextId = 0;
+
 export default function TabTwoScreen({ navigation }) {
 
-  const [text1, text2, text3, text4, text5, text6, onChangeText] = React.useState('');
-  
+  const [text1, text2, text3, text4, text5, onChangeText] = React.useState('');
+  const [name, setName] = React.useState('');
+  const [tags, setTags] = React.useState([]);
+
+
+  const showAlert = () =>
+    Alert.alert(
+      'Tag Title',
+      [
+        {
+          text: 'Ask me later',
+          onPress: () => console.log('Ask me later pressed'),
+        },
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        { text: 'OK', onPress: () => console.log('OK Pressed') },
+      ],
+      { cancelable: false }
+  );
+
+  const handleKeyPress = e => {
+    if (e.key === 'Enter') {
+      AsyncStorage.setItem('any_key_here', value);
+      showAlert();
+      setValue('');
+      alert(`Tag saved: ${value}`);
+    }
+  };
+
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -53,15 +85,26 @@ export default function TabTwoScreen({ navigation }) {
         <TextInput
           style={styles.input}
           onChangeText={onChangeText}
+          onKeyPress={e => handleKeyPress(e)}
           value={text5}
         />
         
         <Text style={styles.text}>Tags</Text>
         <TextInput
           style={styles.input}
-          onChangeText={onChangeText}
-          value={text6}
-        />        
+          onChange={e => setName(e.target.value)}
+          value={name}   
+        />   
+        
+
+        <Button onPress={() => {
+          setTags([
+            ...tags,
+            { id: nextId++, name: name }
+          ]);
+        }} title="click"/>
+
+  
 
         <View
           style={styles.separator}
