@@ -4,7 +4,7 @@ const express = require("express");
 const app = express();
 const port = 3000;
 const bodyParser = require("body-parser");
-
+const geolib = require('geolib');
 const Datastore = require("nedb"); // https://github.com/louischatriot/nedb#readme
 const db = new Datastore({ filename: "./parkings.db", autoload: true });
 
@@ -60,44 +60,47 @@ db.insert(newParking, function (err, newDoc){
 })*/
 
 //Ying
-//function to calculate the distance in miles.
-function distance(lat1, lon1, lat2, lon2) {
-  function radius(x) {
-    return x * Math.PI / 180;
-  }
-
-  const R = 3959; //radius in miles
-  const dLat = radius(lat2 - lat1);
-  const dLon = radius(lon2 - lon1);
-  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(radius(lat1)) * Math.cos(radius(lat2)) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const distance = R * c;
-  return distance;
-}
-
+//findParking Route
 app.get("/findParking", (req, res) => {
-  const { x, y } = req.query;
-  const maxDistance = 5; // max distance in miles
-
-  if (!x || !y) {
-    res.status(400).send("Missing latitude or longitude in query");
-    return;
-  }
-
-  const lat = parseFloat(x);
-  const lon = parseFloat(y);
-
-  db.find({}, (err, parkings) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
+    const { x, y } = req.query;
+  
+    //check if lat or lon is missing
+    if (!x || !y) {
+      res.status(400).send("Missing latitude or longitude");
       return;
     }
-    const nearestParkings = parkings.filter(parking => {
-      return distance(lat, lon, parseFloat(parking.xLocation), parseFloat(parking.yLocation)) <= maxDistance;
-    });
+  
+    const lat = parseFloat(x);
+    const lon = parseFloat(y);
+  
+    //get all parking spots from the nedb file
+    db.find({}, (err, parkings) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+  
+      const max = 5 * 1609.34; //5 miles max distance
 
-    res.json(nearestParkings);
-  });
+      //filter the parking within 5 miles
+      const nearestParkings = parkings.filter(parking => {
+        const distance = geolib.getDistance(
+          { latitude: lat, longitude: lon },
+          { latitude: parseFloat(parking.xLocation), longitude: parseFloat(parking.yLocation) }
+        );
+        return distance <= max;
+      }).map(parking => {
+        const distance = geolib.getDistance(
+          { latitude: lat, longitude: lon },
+          { latitude: parseFloat(parking.xLocation), longitude: parseFloat(parking.yLocation) }
+        );
+        return {
+          ...parking,
+          distance: (distance / 1609.34).toFixed(2) + ' miles' // convert meters to miles and format
+        };
+      });
+  
+      //respond 
+      res.json(nearestParkings);
+    });
 });
