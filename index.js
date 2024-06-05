@@ -131,8 +131,8 @@ parkings.forEach(parking => {
       console.log("Data inserted: ", newDoc);
     }
   });
-});
-*/
+});*/
+
 
 //Ying
 //findParking Route
