@@ -1,123 +1,124 @@
-
-import React from 'react';
-import { StyleSheet, Button, TextInput, ScrollView, useState } from "react-native";
-
+import React, { useState } from "react";
+import { StyleSheet, Button, TextInput, ScrollView } from "react-native";
 import EditScreenInfo from "../components/EditScreenInfo";
-import { Text, View} from "../components/Themed";
+import { Text, View } from "../components/Themed";
+
 
 let nextId = 0;
 
 export default function TabTwoScreen({ navigation }) {
+  // object might save in random order due to the ('...') by design
+  const [formData, setFormData] = useState({
+    address: "",
+    title: "",
+    author: "",
+    rating: "",
+    description: "",
+    tags: [""],
+  });
 
-  const [text1, text2, text3, text4, text5, onChangeText] = React.useState('');
-  const [name, setName] = React.useState('');
-  const [tags, setTags] = React.useState([]);
+  const [tag, setTag] = useState("");
+  const [tags, setTags] = useState([]);
 
-
-  const showAlert = () =>
-    Alert.alert(
-      'Tag Title',
-      [
-        {
-          text: 'Ask me later',
-          onPress: () => console.log('Ask me later pressed'),
-        },
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        { text: 'OK', onPress: () => console.log('OK Pressed') },
-      ],
-      { cancelable: false }
-  );
-
-  const handleKeyPress = e => {
-    if (e.key === 'Enter') {
-      AsyncStorage.setItem('any_key_here', value);
-      showAlert();
-      setValue('');
-      alert(`Tag saved: ${value}`);
+  const addTag = () => {
+    if (tag.trim() !== "") {
+      const updatedTags = [...tags, tag.trim()]; // Add the new tag to the existing array
+      setTags(updatedTags); // Update the tags state array
+      setFormData({ ...formData, tags: updatedTags }); // Update the formData object with the new tags array
+      setTag(""); // Clear the tag input field
     }
+  };
+
+  const handleChangeText = (key) => (value) => {
+    setFormData({ ...formData, [key]: value });
+  };
+
+  // TODO: Have the form send a POST request to the "/setParking" endpoint
+  const handleSubmit = () => {
+    
+    console.log("Form Data:", formData);
   };
 
   return (
     <ScrollView>
       <View style={styles.container}>
-
         <Text style={styles.title}>Create Entry</Text>
-        
-        <Button onPress={navigation.openDrawer} title="Location"/>
+        {/** Make these buttons functional */}
+        <Button onPress={navigation.openDrawer} title="Location" />
 
-        <Button onPress={navigation.openDrawer} title="Image"/>
-
-
+        <Button onPress={navigation.openDrawer} title="Image" />
+        {/** Default values will be defined in the formData useState() */}
         <Text style={styles.text}>Address</Text>
         <TextInput
           style={styles.input}
-          onChangeText={onChangeText}
+          onChangeText={handleChangeText("address")}
           placeholder="Address bike parking"
-          value={text1}
+          value={formData.address}
         />
-        
+
         <Text style={styles.text}>Title</Text>
         <TextInput
+          maxLength={30}
           style={styles.input}
-          onChangeText={onChangeText}
+          onChangeText={handleChangeText("title")}
           placeholder="Title name"
-          value={text2}
-        />     
+          value={formData.title}
+        />
 
         <Text style={styles.text}>Author</Text>
         <TextInput
+          maxLength={20}
           style={styles.input}
-          onChangeText={onChangeText}
+          onChangeText={handleChangeText("author")}
           placeholder="Your name"
-          value={text3}
+          value={formData.author}
         />
 
         <Text style={styles.text}>Rating</Text>
         <TextInput
+          maxLength={1}
           style={styles.input}
-          keyboardType='numeric'
-          onChangeText={onChangeText}
+          keyboardType="numeric"
+          onChangeText={handleChangeText("rating")}
           placeholder="1-5"
-          value={text4}
+          value={formData.rating}
         />
 
         <Text style={styles.text}>Description</Text>
         <TextInput
+          maxLength={50}
+          multiline={true}
           style={styles.input}
-          onChangeText={onChangeText}
-          onKeyPress={e => handleKeyPress(e)}
+          onChangeText={handleChangeText("description")}
           placeholder="Biking park description"
-          value={text5}
+          value={formData.description}
         />
-        
+
         <Text style={styles.text}>Tags</Text>
         <TextInput
+          maxLength={10}
           style={styles.input}
-          onChange={e => setName(e.target.value)}
-          placeholder="Any tags"
-          value={name}   
-        />   
-        
+          onChangeText={setTag}
+          placeholder="Add a tag"
+          value={tag}
+        />
 
-        <Button onPress={() => {
-          setTags([
-            ...tags,
-            { id: nextId++, name: name }
-          ]);
-        }} title="click"/>
+        {/*This is for listing the tags below the TextInput*/}
+        {tags.map((tag, index) => (
+          <View key={index}>
+            <Text>{tag}</Text>
+          </View>
+        ))}
+        <Button title="add tag" onPress={addTag} />
 
-  
+        <Button title="Submit" onPress={handleSubmit} />
 
         <View
           style={styles.separator}
           lightColor="#eee"
           darkColor="rgba(255,255,255,0.1)"
         />
-        
+
         <EditScreenInfo path="/screens/TabTwoScreen.tsx" />
       </View>
     </ScrollView>
@@ -145,5 +146,5 @@ const styles = StyleSheet.create({
     margin: 12,
     borderWidth: 1,
     padding: 10,
-  }
+  },
 });
