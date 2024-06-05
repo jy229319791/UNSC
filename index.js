@@ -80,9 +80,9 @@ app.get("/findParking", (req, res) => {
         return;
       }
   
-      const max = 5 * 1609.34; //5 miles max distance
+      const max = 25 * 1609.34; //25 miles max distance
 
-      //filter the parking within 5 miles
+      //filter the parking within 25 miles
       const nearestParkings = parkings.filter(parking => {
         const distance = geolib.getDistance(
           { latitude: lat, longitude: lon },
@@ -96,7 +96,7 @@ app.get("/findParking", (req, res) => {
         );
         return {
           ...parking,
-          distance: (distance / 1609.34).toFixed(2) + ' miles' // convert meters to miles and format
+          distance: (distance / 1609.34).toFixed(2) + ' miles' // convert meters to miles
         };
       });
   
