@@ -35,6 +35,25 @@ export default function TabTwoScreen({ navigation }) {
 
   // TODO: Have the form send a POST request to the "/setParking" endpoint
   const handleSubmit = () => {
+    fetch('http://localhost:3000/setParking', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    })
+    .then(response => {
+      if(!response.ok) {
+        throw new Error('Network response not good')
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Response from server:', data);
+    })
+    .catch(error => {
+      console.error('There was a problem with your fetch operation:', error);
+    });
     
     console.log("Form Data:", formData);
   };
