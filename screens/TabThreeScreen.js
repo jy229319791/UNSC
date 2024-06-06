@@ -16,7 +16,7 @@ export default function TabThreeScreen({ navigation }) {
         <Text style={styles.title}>Crossroad Parking</Text>
         
         <Image
-          style={{ width:100, height: 300, postition:'relative', right:5, top:5,
+          style={{ width:400, height: 300, postition:'relative', right:5, top:5,
           marginBottom: 15}}
           source= { require('../assets/images/crossroadMall.jpg')}
         />
