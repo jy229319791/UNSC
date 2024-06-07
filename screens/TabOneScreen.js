@@ -19,19 +19,28 @@ export default function TabOneScreen({ navigation }) {
           onChangeText={onChangeText}
           value={text1}
         />
-        <Button onPress={navigation.openDrawer} title="Search"/>
+        <Button onPress={Search} title="Search"/>
         <Text style={styles.Text}></Text>
         <View
           style={styles.separator}
           lightColor="#eee"
           darkColor="rgba(255,255,255,0.1)"
         />
-        <Button onPress={navigation.openDrawer} title="Geolocate"/>
+        <Button onPress={Geolocation} title="Geolocate"/>
         <EditScreenInfo path="/screens/TabOneScreen.tsx" />        
       </View>      
     </ScrollView>
   );
 }
+
+const Search = () => {
+  fetch('http://localhost:3000/getParking', {
+    method: 'Get'
+  });
+};
+const Geolocation = () => {
+  
+};
 
 const styles = StyleSheet.create({
   container: {
