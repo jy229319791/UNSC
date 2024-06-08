@@ -21,7 +21,7 @@ export default function BottomTabNavigator() {
       screenOptions={{ tabBarActiveTintColor: Colors[colorScheme].tint }}
     >
       <BottomTab.Screen
-        name="TabOne"
+        name="Find Bike Parking"
         component={TabOneNavigator}
         options={{
           headerShown: false,
@@ -31,7 +31,7 @@ export default function BottomTabNavigator() {
         }}
       />
       <BottomTab.Screen
-        name="TabTwo"
+        name="Create Bike Entry"
         component={TabTwoNavigator}
         options={{
           headerShown: false,
