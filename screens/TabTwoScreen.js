@@ -33,9 +33,9 @@ export default function TabTwoScreen({ navigation }) {
     setFormData({ ...formData, [key]: value });
   };
 
-  // TODO: Have the form send a POST request to the "/setParking" endpoint
+  // Resolution: https://stackoverflow.com/questions/9808560/why-do-we-use-10-0-2-2-to-connect-to-local-web-server-instead-of-using-computer
   const handleSubmit = () => {
-    fetch('http://localhost:3000/setParking', {
+    fetch('http://10.0.2.2:3000/setParking', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -54,8 +54,6 @@ export default function TabTwoScreen({ navigation }) {
     .catch(error => {
       console.error('There was a problem with your fetch operation:', error);
     });
-    
-    console.log("Form Data:", formData);
   };
 
   return (
