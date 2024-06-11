@@ -34,7 +34,6 @@ app.get("/getParkings", (req, res) => {
 app.post("/setParking", (req, res) => {
   console.log("set is running")
   const newParking = req.body;
-  res.json(newParking)
   db.insert(newParking, function (err, newDoc) {
     if (err) {
       console.log("Error inserting data : ", err);
