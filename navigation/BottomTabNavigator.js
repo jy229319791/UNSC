@@ -40,16 +40,7 @@ export default function BottomTabNavigator() {
           ),
         }}
       />
-      <BottomTab.Screen
-        name="TabThree"
-        component={TabThreeNavigator}
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="ios-code" color={color} />
-          ),
-        }}
-      />     
+      
     </BottomTab.Navigator>
   );
 }
