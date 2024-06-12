@@ -1,4 +1,3 @@
-/*AIzaSyAFcBA5PGa8mPKp9WZqs23rtDYsN4F4Uwo*/
 import React, { useState } from 'react';
 import { StyleSheet, Button, TextInput, ScrollView, Text, View, Dimensions } from "react-native";
 import MapView, { Marker } from 'react-native-maps';
@@ -22,7 +21,7 @@ export default function TabOneScreen({ navigation }) {
 
   const handleGeolocate = async () => {
     try {
-      const { data } = await axios.post('https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyAFcBA5PGa8mPKp9WZqs23rtDYsN4F4Uwo');
+      const { data } = await axios.post('https://www.googleapis.com/geolocation/v1/geolocate?key=api-keyonDiscord');
       const { lat, lng } = data.location;
 
       const parkingResponse = await axios.get(`http://10.0.2.2:3000/findParking?x=${lat}&y=${lng}`);
@@ -40,6 +39,11 @@ export default function TabOneScreen({ navigation }) {
       setShowMap(false);  // Hide map on error
     }
   };
+  const Search = () => {
+    fetch('http://localhost:3000/getParking', {
+      method: 'Get'
+    });
+  };
 
   return (
     <ScrollView>
@@ -52,7 +56,13 @@ export default function TabOneScreen({ navigation }) {
           onChangeText={onChangeText}
           value={text1}
         />
-        <Button title="Search" onPress={() => console.log('Searching for:', text1)} />
+        <Button onPress={Search} title="Search" />
+        <Text style={styles.Text}></Text>
+        <View
+          style={styles.separator}
+          lightColor="#eee"
+          darkColor="rgba(255,255,255,0.1)"
+        />
         <Button title="Geolocate" onPress={handleGeolocate} />
         {showMap && (
           <MapView style={styles.map} region={region}>
@@ -64,6 +74,7 @@ export default function TabOneScreen({ navigation }) {
                   longitude: parseFloat(parking.yLocation)
                 }}
                 title={parking.title}
+                rating= {parking.rating}
                 description={`Distance: ${parking.distance} miles`}
               />
             ))}
@@ -79,18 +90,26 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    padding: 20,
   },
   title1: {
     fontSize: 40,
     fontWeight: "bold",
   },
+  title2: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  separator: {
+    marginVertical: 30,
+    height: 1,
+    width: "80%",
+  },
   input: {
-    height: 40,
+    height: 50,
+    width: 300,
     margin: 12,
     borderWidth: 1,
     padding: 10,
-    width: '100%',
   },
   map: {
     width: width,
