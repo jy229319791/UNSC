@@ -107,6 +107,68 @@ app.post("/setParking", (req, res) => {
     image: "image"
   }
 ];
+const parkings = [
+  {
+    address: "2795 El Camino Real, Palo Alto, CA 94306",
+    xLocation: "37.4380",
+    yLocation: "-122.1458",
+    author: "City of Palo Alto",
+    rating: 4.5,
+    creationDate: new Date(),
+    description: "Public parking, 2-hour limit.",
+    tags: ["free", "public"],
+    title: "El Camino Real Parking",
+    image: "image"
+  },
+  {
+    address: "520 Webster St, Palo Alto, CA 94301",
+    xLocation: "37.4483",
+    yLocation: "-122.1602",
+    author: "City of Palo Alto",
+    rating: 4.8,
+    creationDate: new Date(),
+    description: "Covered parking available. Close to shopping district.",
+    tags: ["covered", "secure"],
+    title: "Webster Street Garage",
+    image: "image"
+  },
+  {
+    address: "445 Bryant St, Palo Alto, CA 94301",
+    xLocation: "37.4452",
+    yLocation: "-122.1634",
+    author: "City of Palo Alto",
+    rating: 4.3,
+    creationDate: new Date(),
+    description: "Public parking near city center, 3-hour limit.",
+    tags: ["public", "downtown"],
+    title: "Bryant Street Lot",
+    image: "image"
+  },
+  {
+    address: "270 Grant Ave, Palo Alto, CA 94306",
+    xLocation: "37.4263",
+    yLocation: "-122.1453",
+    author: "Stanford Shopping Center",
+    rating: 4.7,
+    creationDate: new Date(),
+    description: "Extensive parking available, well-lit at night.",
+    tags: ["spacious", "well-lit"],
+    title: "Stanford Shopping Center Parking",
+    image: "image"
+  },
+  {
+    address: "801 California Ave, Palo Alto, CA 94304",
+    xLocation: "37.4211",
+    yLocation: "-122.1121",
+    author: "California Ave Caltrain",
+    rating: 4.2,
+    creationDate: new Date(),
+    description: "Public transit parking available, no overnight.",
+    tags: ["transit", "no-overnight"],
+    title: "California Ave Caltrain Lot",
+    image: "image"
+  }
+];
 
 // insert parking entrys into the parkings.db
 parkings.forEach(parking => {
@@ -117,8 +179,8 @@ parkings.forEach(parking => {
       console.log("Data inserted: ", newDoc);
     }
   });
-});*/
-
+});
+*/
 
 //Ying
 //findParking Route
