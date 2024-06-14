@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { StyleSheet, Button, TextInput, ScrollView, Text, View, Dimensions } from "react-native";
-import MapView, { Marker } from 'react-native-maps';
+//import MapView, { Marker } from 'react-native-maps';
 import axios from 'axios';
 
 // Get the window dimensions
 const { width, height } = Dimensions.get('window'); 
-
 
 
 export default function TabOneScreen({ navigation }) {
@@ -109,7 +108,7 @@ export default function TabOneScreen({ navigation }) {
           lightColor="#eee"
           darkColor="rgba(255,255,255,0.1)"
         />
-        <Button title="Geolocate" onPress={handleGeolocate} />
+        {/* <Button title="Geolocate" onPress={handleGeolocate} />
         {showMap && (
           <MapView style={styles.map} region={region}>
             {nearbyParkings.map((parking, index) => (
@@ -125,7 +124,7 @@ export default function TabOneScreen({ navigation }) {
               />
             ))}
           </MapView>
-        )}
+        )} */}
 
         {nearest.map((parking, index) => (
           <View key={index}>
