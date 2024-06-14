@@ -9,7 +9,11 @@ const { width, height } = Dimensions.get('window');
 
 
 export default function TabOneScreen({ navigation }) {
-  const [text1, onChangeText] = useState('');
+  const [address, setAddress] = useState("");
+  const [xLocation, setXLocation] = useState('');
+  const [yLocation, setYLocation] = useState('');
+  const [nearest, setNearest] = useState([]);
+
   const [nearbyParkings, setNearbyParkings] = useState([]);
   const [region, setRegion] = useState({
     latitude: 47.5851,  // Default location: Bellevue College
@@ -18,6 +22,11 @@ export default function TabOneScreen({ navigation }) {
     longitudeDelta: 0.0421,
   });
   const [showMap, setShowMap] = useState(false);  // Hide map by default
+
+  const handleChangeText = (value) => {
+    setAddress(value);
+  };
+
 
   const handleGeolocate = async () => {
     try {
@@ -40,9 +49,46 @@ export default function TabOneScreen({ navigation }) {
     }
   };
   const Search = () => {
-    fetch('http://localhost:3000/getParking', {
-      method: 'Get'
-    });
+    if(!address.trim()){
+      console.log("invalid address or empty string");
+      return;
+    }
+    fetch(`http://10.0.2.2:3000/getParkings?address=${encodeURIComponent(address)}` , {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((response) => {
+        // network error handling
+        if(!response.ok) {
+          throw new Error("Network response was not good for getParking");
+        }
+          return response.json();
+      })
+      .then((data) => {
+        const {xLocation, yLocation} = data[0];
+        setXLocation(xLocation);
+        setYLocation(yLocation);
+        
+        // Second fetch finds nearest parking locations based on x and y locations
+        return fetch(`http://10.0.2.2:3000/findParking?x=${encodeURIComponent(xLocation)}&y=${encodeURIComponent(yLocation)}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      })
+      .then((response) => {
+        // network error handling
+        if(!response.ok) {
+          throw new Error("Network response was not good for findParking");
+        }
+          return response.json();
+      })
+      .then((data) => {
+        setNearest(data)
+        console.log("Parking Locations: ", JSON.stringify(data))
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
   };
 
   return (
@@ -53,8 +99,8 @@ export default function TabOneScreen({ navigation }) {
         <Text style={styles.Text}>Bike Parking</Text>
         <TextInput
           style={styles.input}
-          onChangeText={onChangeText}
-          value={text1}
+          onChangeText={handleChangeText}
+          value={address}
         />
         <Button onPress={Search} title="Search" />
         <Text style={styles.Text}></Text>
@@ -80,6 +126,16 @@ export default function TabOneScreen({ navigation }) {
             ))}
           </MapView>
         )}
+
+        {nearest.map((parking, index) => (
+          <View key={index}>
+            <Text style={styles.title2}>Title: {parking.title}</Text>
+            <Text>Rating: {parking.rating}</Text>
+            <Text>Description: {parking.description}</Text>
+            <Text>Tags: {parking.tags.join(", ")}</Text>
+          </View>
+        ))}
+        
       </View>
     </ScrollView>
   );
