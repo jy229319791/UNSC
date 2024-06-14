@@ -8,6 +8,7 @@ import { useColorScheme } from "react-native";
 import Colors from "../constants/Colors";
 import TabOneScreen from "../screens/TabOneScreen";
 import TabTwoScreen from "../screens/TabTwoScreen";
+import TabThreeScreen from "../screens/TabThreeScreen";
 
 const BottomTab = createBottomTabNavigator();
 
@@ -20,7 +21,7 @@ export default function BottomTabNavigator() {
       screenOptions={{ tabBarActiveTintColor: Colors[colorScheme].tint }}
     >
       <BottomTab.Screen
-        name="TabOne"
+        name="Find Bike Parking"
         component={TabOneNavigator}
         options={{
           headerShown: false,
@@ -30,7 +31,7 @@ export default function BottomTabNavigator() {
         }}
       />
       <BottomTab.Screen
-        name="TabTwo"
+        name="Create Bike Entry"
         component={TabTwoNavigator}
         options={{
           headerShown: false,
@@ -39,6 +40,7 @@ export default function BottomTabNavigator() {
           ),
         }}
       />
+      
     </BottomTab.Navigator>
   );
 }
@@ -76,5 +78,19 @@ function TabTwoNavigator() {
         options={{ headerTitle: "Create Bike Entry" }}
       />
     </TabTwoStack.Navigator>
+  );
+}
+
+const TabThreeStack = createStackNavigator();
+
+function TabThreeNavigator() {
+  return (
+    <TabThreeStack.Navigator>
+      <TabThreeStack.Screen
+        name="TabThreeScreen"
+        component={TabThreeScreen}
+        options={{ headerTitle: "Bike Parking" }}
+      />
+    </TabThreeStack.Navigator>
   );
 }
