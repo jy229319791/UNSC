@@ -32,6 +32,7 @@ app.get("/getParkings", (req, res) => {
 
 
 app.post("/setParking", (req, res) => {
+  console.log("set is running")
   const newParking = req.body;
   db.insert(newParking, function (err, newDoc) {
     if (err) {
@@ -43,21 +44,6 @@ app.post("/setParking", (req, res) => {
     }
   });
 });
-
-/**var newParking = {
-  address: "3000 Landerholm Circle SE, Bellevue, WA 98007",
-  xLocation: "47.5854416125115",
-  yLocation: " -122.14795645970051",
-  author: "Tommy",
-  rating: 4.5,
-  creationDate: new Date(),
-  description: "Here is the description",
-  tags: ["great", "solid", "visible"],
-  title: "Great Parking",
-  image: "image"
-};
-db.insert(newParking, function (err, newDoc){
-})*/
 
 /*const parkings = [
   {
