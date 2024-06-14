@@ -121,7 +121,6 @@ db.insert(newParking, function (err, newDoc){
     image: "image"
   }
 ];
-*/
 const parkings = [
   {
     address: "2795 El Camino Real, Palo Alto, CA 94306",
@@ -195,7 +194,7 @@ parkings.forEach(parking => {
     }
   });
 });
-
+*/
 
 //Ying
 //findParking Route
