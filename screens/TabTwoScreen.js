@@ -6,11 +6,25 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import EditScreenInfo from "../components/EditScreenInfo";
+// import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, View } from "../components/Themed";
 import * as Location from "expo-location";
 
-let nextId = 0;
+// Import styles
+import {
+  scrollContainer,
+  container,
+  title,
+  text,
+  input,
+  inlineContainer,
+  iconButton,
+  submitButton,
+  submitButtonText,
+  separator,
+  tagContainer,
+  tagText,
+} from "../constants/Elements";
 
 export default function TabTwoScreen({ navigation }) {
   const [formData, setFormData] = useState({
@@ -179,93 +193,19 @@ export default function TabTwoScreen({ navigation }) {
   );
 }
 
+// Hammaad
+// Using imported styles from constants/Elements.js
 const styles = StyleSheet.create({
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: "center",
-    padding: 20,
-  },
-  container: {
-    flex: 1,
-    width: "100%",
-    backgroundColor: "#f5f5f5",
-    padding: 20,
-    borderRadius: 8,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "#3a50e0",
-    marginBottom: 20,
-    textAlign: "left",
-    width: "100%",
-  },
-  text: {
-    fontSize: 16,
-    color: "#333",
-    marginVertical: 10,
-    textAlign: "left",
-    width: "100%",
-  },
-  input: {
-    height: 50,
-    flex: 1,
-    marginVertical: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    padding: 10,
-    borderRadius: 8,
-    backgroundColor: "#fff",
-  },
-  inlineContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "transparent",
-  },
-  iconButton: {
-    backgroundColor: "#3a50e0",
-    padding: 10,
-    borderRadius: 8,
-    marginLeft: 10,
-  },
-  submitButton: {
-    backgroundColor: "#3a50e0",
-    paddingVertical: 15,
-    borderRadius: 25,
-    marginVertical: 20,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 15,
-    borderRadius: 50,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  submitButtonText: {
-    color: "#fff",
-    fontSize: 16,
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
-  },
-  tagContainer: {
-    backgroundColor: "#9da8f0",
-    width: "min-content",
-    paddingHorizontal: 22,
-    opacity: 0.8,
-    paddingVertical: 5,
-    borderRadius: 8,
-    marginVertical: 5,
-  },
-  tagText: {
-    color: "#3a50e0",
-    fontWeight: "600",
-  },
+  scrollContainer,
+  container,
+  title,
+  text,
+  input,
+  inlineContainer,
+  iconButton,
+  submitButton,
+  submitButtonText,
+  separator,
+  tagContainer,
+  tagText,
 });
