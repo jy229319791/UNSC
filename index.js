@@ -3,16 +3,20 @@ const express = require("express");
 const axios = require("axios");
 const app = express();
 const port = 3000;
-
+const bodyParser = require("body-parser");
+const geolib = require("geolib");
 const Datastore = require("nedb"); // https://github.com/louischatriot/nedb#readme
 const db = new Datastore({ filename: "./parkings.db", autoload: true });
+
+app.use(bodyParser.json());
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyAFcBA5PGa8mPKp9WZqs23rtDYsN4F4Uwo";
-
+// Hammaad
+// Converts address string to latitute and longitude
 const getCoords = async (addressString) => {
   let status;
   try {
@@ -26,30 +30,46 @@ const getCoords = async (addressString) => {
       }
     );
     status = response.data.status;
+
     const location = response.data.results[0].geometry.location;
     return [location.lat, location.lng];
   } catch (error) {
     console.error("Error fetching geocoding data:", status);
   }
 };
-// EXAMPLE USAGE
-// getCoords("Bellevue").then(console.log);
-// getCoords("3000 Landerholm Circle SE, Bellevue, WA 98007").then(console.log);
 
 app.get("/", (req, res) => {
-  res.send("Try /getParkings or /setParking instead! ");
+  res.send("Try /getParkings, /setParking, or /findParking instead! ");
+});
+
+// Hammaad
+// API to convert address to coordinates
+app.get("/getCoordinates", async (req, res) => {
+  const address = req.query.address;
+  if (!address) {
+    return res.status(400).send("Address query parameter is required");
+  }
+
+  try {
+    const coordinates = await getCoords(address);
+    res.json({ x: coordinates[0], y: coordinates[1] });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 });
 
 app.get("/getParkings", (req, res) => {
-  // TODO: get parkings from db, sort using address, and return them as json
-  db.find({ address: req.body }, (err, docs) => {
-    res.json(docs);
-  });
+  const query = req.query.address ? { address: req.query.address } : {};
 
-  // This is how you can get all the parkings from the database
-  db.find({}, (err, docs) => {
-    res.json(docs);
-  });
+  db.find(query)
+    .sort({ address: 1 })
+    .exec((err, docs) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      res.json(docs);
+    });
 });
 
 app.post("/setParking", (req, res) => {
@@ -65,27 +85,55 @@ app.post("/setParking", (req, res) => {
   });
 });
 
-app.get("/getCoordinates", async (req, res) => {
-  const addressString = req.query.address;
-  if (!addressString) {
-    return res.status(400).send({ error: "Address string is required" });
+//Ying
+//findParking Route
+app.get("/findParking", (req, res) => {
+  const { x, y } = req.query;
+  //check if lat or lon is missing
+  if (!x || !y) {
+    res.status(400).send("Missing latitude or longitude");
+    return;
   }
 
-  const [x, y] = await getCoords(addressString);
-  res.json({ x, y });
-});
+  const lat = parseFloat(x);
+  const lon = parseFloat(y);
 
-/**var newParking = {
-  address: "3000 Landerholm Circle SE, Bellevue, WA 98007",
-  xLocation: "47.5854416125115",
-  yLocation: " -122.14795645970051",
-  author: "Tommy",
-  rating: 4.5,
-  creationDate: new Date(),
-  description: "Here is the description",
-  tags: ["great", "solid", "visible"],
-  title: "Great Parking",
-  image: "image"
-};
-db.insert(newParking, function (err, newDoc){
-})*/
+  //get all parking spots from the nedb file
+  db.find({}, (err, parkings) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+
+    const max = 25 * 1609.34; //25 miles max distance
+
+    //filter the parking within 25 miles
+    const nearestParkings = parkings
+      .filter((parking) => {
+        const distance = geolib.getDistance(
+          { latitude: lat, longitude: lon },
+          {
+            latitude: parseFloat(parking.xLocation),
+            longitude: parseFloat(parking.yLocation),
+          }
+        );
+        return distance <= max;
+      })
+      .map((parking) => {
+        const distance = geolib.getDistance(
+          { latitude: lat, longitude: lon },
+          {
+            latitude: parseFloat(parking.xLocation),
+            longitude: parseFloat(parking.yLocation),
+          }
+        );
+        return {
+          ...parking,
+          distance: (distance / 1609.34).toFixed(2) + " miles", // convert meters to miles
+        };
+      });
+
+    //respond
+    res.json(nearestParkings);
+  });
+});
