@@ -1,13 +1,32 @@
 import React, { useState } from "react";
-import { StyleSheet, Button, TextInput, ScrollView } from "react-native";
-import EditScreenInfo from "../components/EditScreenInfo";
+import {
+  StyleSheet,
+  TextInput,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+// import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, View } from "../components/Themed";
+import * as Location from "expo-location";
 
-
-let nextId = 0;
+// Import styles
+import {
+  scrollContainer,
+  container,
+  title,
+  text,
+  input,
+  inlineContainer,
+  iconButton,
+  submitButton,
+  submitButtonText,
+  separator,
+  tagContainer,
+  tagText,
+} from "../constants/Elements";
 
 export default function TabTwoScreen({ navigation }) {
-  // object might save in random order due to the ('...') by design
   const [formData, setFormData] = useState({
     address: "",
     title: "",
@@ -22,10 +41,10 @@ export default function TabTwoScreen({ navigation }) {
 
   const addTag = () => {
     if (tag.trim() !== "") {
-      const updatedTags = [...tags, tag.trim()]; // Add the new tag to the existing array
-      setTags(updatedTags); // Update the tags state array
-      setFormData({ ...formData, tags: updatedTags }); // Update the formData object with the new tags array
-      setTag(""); // Clear the tag input field
+      const updatedTags = [...tags, tag.trim()];
+      setTags(updatedTags);
+      setFormData({ ...formData, tags: updatedTags });
+      setTag("");
     }
   };
 
@@ -33,45 +52,72 @@ export default function TabTwoScreen({ navigation }) {
     setFormData({ ...formData, [key]: value });
   };
 
-  // Resolution: https://stackoverflow.com/questions/9808560/why-do-we-use-10-0-2-2-to-connect-to-local-web-server-instead-of-using-computer
   const handleSubmit = () => {
-    fetch('http://10.0.2.2:3000/setParking', {
-      method: 'POST',
+    fetch("http://10.0.2.2:3000/setParking", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData)
+      body: JSON.stringify(formData),
     })
-    .then(response => {
-      if(!response.ok) {
-        throw new Error('Network response not good')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response not good");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Response from server:", data);
+      })
+      .catch((error) => {
+        console.error("There was a problem with your fetch operation:", error);
+      });
+  };
+
+  async function requestPermissions() {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    return status;
+  }
+
+  const geoLocate = async () => {
+    let status = await requestPermissions();
+    if (status === "granted") {
+      try {
+        let loc = await Location.getCurrentPositionAsync({});
+        setFormData({
+          ...formData,
+          x: loc.coords.latitude,
+          y: loc.coords.longitude,
+        });
+      } catch (error) {
+        console.error("Error getting location", error);
       }
-      return response.json();
-    })
-    .then(data => {
-      console.log('Response from server:', data);
-    })
-    .catch(error => {
-      console.error('There was a problem with your fetch operation:', error);
-    });
+    } else {
+      console.error("Location permission not granted");
+    }
   };
 
   return (
-    <ScrollView>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
-        <Text style={styles.title}>Create Entry</Text>
-        {/** Make these buttons functional */}
-        <Button onPress={navigation.openDrawer} title="Location" />
+        <View style={styles.inlineContainer}>
+          <TextInput
+            style={styles.input}
+            onChangeText={handleChangeText("address")}
+            placeholder="Address bike parking"
+            value={formData.address}
+          />
+          <TouchableOpacity style={styles.iconButton} onPress={geoLocate}>
+            <Ionicons name="location-sharp" size={24} color="#fff" />
+          </TouchableOpacity>
+        </View>
 
-        <Button onPress={navigation.openDrawer} title="Image" />
-        {/** Default values will be defined in the formData useState() */}
-        <Text style={styles.text}>Address</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={handleChangeText("address")}
-          placeholder="Address bike parking"
-          value={formData.address}
-        />
+        {formData.x && formData.y && (
+          <>
+            <Text style={styles.text}>Latitude: {formData.x}</Text>
+            <Text style={styles.text}>Longitude: {formData.y}</Text>
+          </>
+        )}
 
         <Text style={styles.text}>Title</Text>
         <TextInput
@@ -110,25 +156,30 @@ export default function TabTwoScreen({ navigation }) {
           placeholder="Biking park description"
           value={formData.description}
         />
-
         <Text style={styles.text}>Tags</Text>
-        <TextInput
-          maxLength={10}
-          style={styles.input}
-          onChangeText={setTag}
-          placeholder="Add a tag"
-          value={tag}
-        />
 
-        {/*This is for listing the tags below the TextInput*/}
+        <View style={styles.inlineContainer}>
+          <TextInput
+            maxLength={10}
+            style={styles.input}
+            onChangeText={setTag}
+            placeholder="Add a tag"
+            value={tag}
+          />
+          <TouchableOpacity style={styles.iconButton} onPress={addTag}>
+            <Ionicons name="add-circle" size={24} color="#fff" />
+          </TouchableOpacity>
+        </View>
+
         {tags.map((tag, index) => (
-          <View key={index}>
-            <Text>{tag}</Text>
+          <View key={index} style={styles.tagContainer}>
+            <Text style={styles.tagText}>{tag}</Text>
           </View>
         ))}
-        <Button title="add tag" onPress={addTag} />
 
-        <Button title="Submit" onPress={handleSubmit} />
+        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+          <Text style={styles.submitButtonText}>Submit</Text>
+        </TouchableOpacity>
 
         <View
           style={styles.separator}
@@ -136,32 +187,25 @@ export default function TabTwoScreen({ navigation }) {
           darkColor="rgba(255,255,255,0.1)"
         />
 
-        <EditScreenInfo path="/screens/TabTwoScreen.tsx" />
+        {/* <EditScreenInfo path="/screens/TabTwoScreen.tsx" /> */}
       </View>
     </ScrollView>
   );
 }
 
+// Hammaad
+// Using imported styles from constants/Elements.js
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 40,
-    fontWeight: "bold",
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
-  },
-  input: {
-    height: 50,
-    width: 300,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-  },
+  scrollContainer,
+  container,
+  title,
+  text,
+  input,
+  inlineContainer,
+  iconButton,
+  submitButton,
+  submitButtonText,
+  separator,
+  tagContainer,
+  tagText,
 });
