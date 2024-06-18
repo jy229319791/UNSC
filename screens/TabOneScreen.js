@@ -39,6 +39,7 @@ export default function TabOneScreen() {
       }
     })();
   }, []);
+
   // Find the nearest parking locations based on the latitude and longitude
   const findNearestParking = (latitude, longitude) => {
     fetch(
@@ -54,6 +55,8 @@ export default function TabOneScreen() {
   // Handle the text input change
   const handleChangeText = (text) => setAddress(text);
 
+  //Oscar
+  // http request, use coordinates to find parking locations nearby
   const Search = () => {
     if (!address.trim()) {
       console.log("invalid address or empty string");
