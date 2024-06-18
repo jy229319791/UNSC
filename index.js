@@ -58,6 +58,7 @@ app.get("/getCoordinates", async (req, res) => {
   }
 });
 
+
 app.get("/getParkings", (req, res) => {
   const query = req.query.address ? { address: req.query.address } : {};
 
@@ -72,6 +73,8 @@ app.get("/getParkings", (req, res) => {
     });
 });
 
+//Oscar
+//Saving the data from an object from the front end onto the database
 app.post("/setParking", (req, res) => {
   const newParking = req.body;
   db.insert(newParking, function (err, newDoc) {
