@@ -4,6 +4,7 @@ import {
   TextInput,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 // import EditScreenInfo from "../components/EditScreenInfo";
@@ -68,9 +69,13 @@ export default function TabTwoScreen({ navigation }) {
       })
       .then((data) => {
         console.log("Response from server:", data);
+        //success message
+        Alert.alert("Success", "Submission successful!", [{ text: "OK" }]);
       })
       .catch((error) => {
         console.error("There was a problem with your fetch operation:", error);
+        //error message
+        Alert.alert("Error", "Failed to submit. Please try again.", [{ text: "OK" }]);
       });
   };
 
