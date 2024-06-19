@@ -58,9 +58,10 @@ app.get("/getCoordinates", async (req, res) => {
   }
 });
 
-
+//update getParkings route to accept an id query parameter
 app.get("/getParkings", (req, res) => {
-  const query = req.query.address ? { address: req.query.address } : {};
+  const { id } = req.query;
+  const query = id ? { _id: id } : {};
 
   db.find(query)
     .sort({ address: 1 })
