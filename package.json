@@ -15,6 +15,7 @@
     "body-parser": "^1.20.2",
     "express": "^4.19.2",
     "geolib": "^3.3.4",
-    "nedb": "^1.8.0"
+    "nedb": "^1.8.0",
+    "react-native-geolocation-service": "^5.3.1"
   }
 }
