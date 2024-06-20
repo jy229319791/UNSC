@@ -121,18 +121,19 @@ app.get("/findParking", (req, res) => {
         const distance = geolib.getDistance(
           { latitude: lat, longitude: lon },
           {
-            latitude: parseFloat(parking.xLocation),
-            longitude: parseFloat(parking.yLocation),
+            latitude: parseFloat(parking.x),
+            longitude: parseFloat(parking.y),
           }
         );
+        console.log("Distance: "+distance + "  Parking title: " + parking )
         return distance <= max;
       })
       .map((parking) => {
         const distance = geolib.getDistance(
           { latitude: lat, longitude: lon },
           {
-            latitude: parseFloat(parking.xLocation),
-            longitude: parseFloat(parking.yLocation),
+            latitude: parseFloat(parking.x),
+            longitude: parseFloat(parking.y),
           }
         );
         return {
