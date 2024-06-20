@@ -46,7 +46,7 @@ export default function TabThreeScreen({ route, navigation }) {
 
     // handle navigation with Google Maps
     const handleNavigation = () => {
-        const url = `https://www.google.com/maps/dir/?api=1&destination=${parkingDetails[0].xLocation},${parkingDetails[0].yLocation}`;
+        const url = `https://www.google.com/maps/dir/?api=1&destination=${parkingDetails[0].x},${parkingDetails[0].y}`;
         Linking.openURL(url);
     };
 
@@ -57,8 +57,8 @@ export default function TabThreeScreen({ route, navigation }) {
             <Text style={styles.text}>Rating: {parkingDetails[0].rating}</Text>
             <Text style={styles.text}>Author: {parkingDetails[0].author}</Text>
             <Text style={styles.text}>Address: {parkingDetails[0].address}</Text>
-            <Text style={styles.text}>Latitude: {parkingDetails[0].xLocation}</Text>
-            <Text style={styles.text}>Longitude: {parkingDetails[0].yLocation}</Text>
+            <Text style={styles.text}>Latitude: {parkingDetails[0].x}</Text>
+            <Text style={styles.text}>Longitude: {parkingDetails[0].y}</Text>
 
             {parkingDetails[0].tags && (
                 <View style={styles.tagContainer}>
@@ -86,16 +86,16 @@ export default function TabThreeScreen({ route, navigation }) {
             <MapView
                 style={styles.map}
                 initialRegion={{
-                    latitude: parseFloat(parkingDetails[0].xLocation),
-                    longitude: parseFloat(parkingDetails[0].yLocation),
+                    latitude: parseFloat(parkingDetails[0].x),
+                    longitude: parseFloat(parkingDetails[0].y),
                     latitudeDelta: 0.01,
                     longitudeDelta: 0.01,
                 }}
             >
                 <Marker
                     coordinate={{
-                        latitude: parseFloat(parkingDetails[0].xLocation),
-                        longitude: parseFloat(parkingDetails[0].yLocation),
+                        latitude: parseFloat(parkingDetails[0].x),
+                        longitude: parseFloat(parkingDetails[0].y),
                     }}
                     title={parkingDetails[0].title}
                     description={parkingDetails[0].description}
