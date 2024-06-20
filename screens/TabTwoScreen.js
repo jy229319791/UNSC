@@ -11,7 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Text, View } from "../components/Themed";
 import * as Location from "expo-location";
 
-// Import styles
+// Hammaad - Import styles
 import {
   scrollContainer,
   container,
@@ -26,6 +26,7 @@ import {
   tagContainer,
   tagText,
 } from "../constants/Elements";
+// End Hammaad
 
 export default function TabTwoScreen({ navigation }) {
   const [formData, setFormData] = useState({
@@ -35,6 +36,10 @@ export default function TabTwoScreen({ navigation }) {
     rating: "",
     description: "",
     tags: [""],
+    // Hammaad
+    x: null,
+    y: null,
+    // End Hammaad
   });
 
   const [tag, setTag] = useState("");
@@ -53,13 +58,37 @@ export default function TabTwoScreen({ navigation }) {
     setFormData({ ...formData, [key]: value });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    // Hammaad - Get coordinates if address is provided
+    let x = formData.x;
+    let y = formData.y;
+    if ((!formData.x || !formData.y) && formData.address !== "") {
+      const res = await fetch(
+        `http://10.0.2.2:3000/getCoordinates?address=${encodeURIComponent(
+          formData.address
+        )}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      if (!res.ok) {
+        throw new Error("Network response was not good for getCoordinates");
+      }
+      const data = await res.json();
+      x = data.x;
+      y = data.y;
+
+      setFormData((formData) => ({ ...formData, x, y }));
+    }
+
+    // End Hammaad
     fetch("http://10.0.2.2:3000/setParking", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({ ...formData, x, y }),
     })
       .then((response) => {
         if (!response.ok) {
@@ -68,14 +97,16 @@ export default function TabTwoScreen({ navigation }) {
         return response.json();
       })
       .then((data) => {
-        console.log("Response from server:", data);
+        console.log("Set new parking:", data);
         //success message
         Alert.alert("Success", "Submission successful!", [{ text: "OK" }]);
       })
       .catch((error) => {
         console.error("There was a problem with your fetch operation:", error);
         //error message
-        Alert.alert("Error", "Failed to submit. Please try again.", [{ text: "OK" }]);
+        Alert.alert("Error", "Failed to submit. Please try again.", [
+          { text: "OK" },
+        ]);
       });
   };
 
@@ -112,17 +143,19 @@ export default function TabTwoScreen({ navigation }) {
             placeholder="Address bike parking"
             value={formData.address}
           />
+          {/* Hammaad - Add geolocate button */}
           <TouchableOpacity style={styles.iconButton} onPress={geoLocate}>
             <Ionicons name="location-sharp" size={24} color="#fff" />
           </TouchableOpacity>
         </View>
-
+        {/* Hammaad - Display geolocaiton result*/}
         {formData.x && formData.y && (
           <>
             <Text style={styles.text}>Latitude: {formData.x}</Text>
             <Text style={styles.text}>Longitude: {formData.y}</Text>
           </>
         )}
+        {/* End Hammaad */}
 
         <Text style={styles.text}>Title</Text>
         <TextInput
@@ -191,8 +224,6 @@ export default function TabTwoScreen({ navigation }) {
           lightColor="#eee"
           darkColor="rgba(255,255,255,0.1)"
         />
-
-        {/* <EditScreenInfo path="/screens/TabTwoScreen.tsx" /> */}
       </View>
     </ScrollView>
   );
