@@ -34,6 +34,8 @@ export default function TabTwoScreen({ navigation }) {
     rating: "",
     description: "",
     tags: [""],
+    x: null,
+    y: null,
   });
 
   const [tag, setTag] = useState("");
@@ -53,6 +55,31 @@ export default function TabTwoScreen({ navigation }) {
   };
 
   const handleSubmit = () => {
+    if ((!formData.x || !formData.y) && formData.address !== "") {
+      fetch(
+        `http://10.0.2.2:3000/getCoordinates?address=${encodeURIComponent(
+          formData.address
+        )}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      )
+        .then((response) => {
+          console.log(response);
+          // network error handling
+          if (!response.ok) {
+            throw new Error("Network response was not good for getParking");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data);
+          const { x, y } = data;
+          formData.x = x;
+          formData.y = y;
+        });
+    }
     fetch("http://10.0.2.2:3000/setParking", {
       method: "POST",
       headers: {
