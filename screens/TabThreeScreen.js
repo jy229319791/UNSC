@@ -1,134 +1,173 @@
-import React from 'react';
-import { StyleSheet, Button, TextInput, ScrollView, Image } from "react-native";
+import React, { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, Text, View, ActivityIndicator } from "react-native";
+import MapView, { Marker } from 'react-native-maps';
+import { Icon, Button } from 'react-native-elements';
+import * as Linking from 'expo-linking';
 
-import EditScreenInfo from "../components/EditScreenInfo";
-import { Text, View} from "../components/Themed";
 
-export default function TabThreeScreen({ navigation }) {
+//ying modified parkingdetail page with ai assistance
+export default function TabThreeScreen({ route, navigation }) {
+    const { parkingId } = route.params;
+    const [parkingDetails, setParkingDetails] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
-    const [text1, text2, onChangeText] = React.useState('');
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // get parking details from the server
+                const response = await fetch(`http://10.0.2.2:3000/getParkings?id=${parkingId}`);
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || "Error fetching data");
+                setParkingDetails(data);
+            } catch (error) {
+                console.error("Failed to fetch parking details:", error);
+                setError(error.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [parkingId]);
+
+    // show loading spinner while fetching data
+    if (loading) {
+        return <ActivityIndicator size="large" color="#0000ff" />;
+    }
+    // show error message if there was an error fetching data
+    if (error) {
+        return <Text style={styles.errorText}>Error: {error}</Text>;
+    }
+    // show message if no details are available
+    if (!parkingDetails) {
+        return <Text style={styles.noDetailsText}>No details available for this parking spot.</Text>;
+    }
+
+    // handle navigation with Google Maps
+    const handleNavigation = () => {
+        const url = `https://www.google.com/maps/dir/?api=1&destination=${parkingDetails[0].xLocation},${parkingDetails[0].yLocation}`;
+        Linking.openURL(url);
+    };
 
     return (
+        <ScrollView style={styles.container}>
+            <Text style={styles.title}>{parkingDetails[0].title}</Text>
+            <Text style={styles.text}>Description: {parkingDetails[0].description}</Text>
+            <Text style={styles.text}>Rating: {parkingDetails[0].rating}</Text>
+            <Text style={styles.text}>Author: {parkingDetails[0].author}</Text>
+            <Text style={styles.text}>Address: {parkingDetails[0].address}</Text>
+            <Text style={styles.text}>Latitude: {parkingDetails[0].xLocation}</Text>
+            <Text style={styles.text}>Longitude: {parkingDetails[0].yLocation}</Text>
 
-    <ScrollView>
-      <View style={styles.container}>
-
-        <Text style={styles.title}>Crossroad Parking</Text>
-        
-        <Image
-          style={{ width:400, height: 300, postition:'relative', right:5, top:5,
-          marginBottom: 15}}
-          source= { require('../assets/images/crossroadMall.jpg')}
-        />
-
-        
-
-      </View>
-
-        <Text style={styles.text}>A perfect place to park your bike.</Text>
-
-        <View style = {styles.columnView}>
-            <View style = {styles.rowView}>
-                <TextInput
-                style={styles.reviewInput}
-                onChangeText={onChangeText}
-                placeholder="Leave a review"
-                value={text1}
-                />   
-                <TextInput
-                style={styles.ratingInput}
-                onChangeText={onChangeText}
-                keyboardType='numeric'
-                placeholder="1-5"
-                value={text2}
-                />
-                <Button onPress={() => {
-            
-                }} title="Send"/>               
-            </View>
-        </View>
-
-        <View style = {styles.flexBox}>
-            
-            <View style = {styles.columnView}>
-                <View style = {styles.rowView2}>
-                    <Text style={styles.text}>Author Review</Text>
-                    <View style = {styles.flexBox2}>       
-                        <Text style={styles.text}>4</Text>
-                    </View>                 
+            {parkingDetails[0].tags && (
+                <View style={styles.tagContainer}>
+                    {parkingDetails[0].tags.map((tag, index) => (
+                        <Text key={index} style={styles.tag}>{tag}</Text>
+                    ))}
                 </View>
-            </View>
+            )}
+
+            <Button
+                title="Navigate with Google Maps"
+                onPress={handleNavigation}
+                icon={
+                    <Icon
+                        name="navigation"
+                        type="material"
+                        size={20}
+                        color="white"
+                        iconStyle={{ marginRight: 10 }}
+                    />
+                }
+                buttonStyle={styles.navButton}
+            />
+            {/* Show map with parking location */}
+            <MapView
+                style={styles.map}
+                initialRegion={{
+                    latitude: parseFloat(parkingDetails[0].xLocation),
+                    longitude: parseFloat(parkingDetails[0].yLocation),
+                    latitudeDelta: 0.01,
+                    longitudeDelta: 0.01,
+                }}
+            >
+                <Marker
+                    coordinate={{
+                        latitude: parseFloat(parkingDetails[0].xLocation),
+                        longitude: parseFloat(parkingDetails[0].yLocation),
+                    }}
+                    title={parkingDetails[0].title}
+                    description={parkingDetails[0].description}
+                />
+            </MapView>
+
             
-            <Text style={styles.text}>This is a good place to park your bike.</Text>
-        </View>
-
-        <View style = {styles.flexBox3}>
-            <Text style={styles.text}>Address...</Text>
-                <Button onPress={() => {
-                    
-                }} title="Get Directions"/>  
-        </View>
-
-        <EditScreenInfo path="/screens/TabThreeScreen.tsx" />
-    </ScrollView>
+        </ScrollView>
     );
 }
 
 
-
+// Styling
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      alignItems: "center",
-      justifyContent: "center",
+        padding: 5,
+        flex: 1,
+        backgroundColor: '#grey',
+        marginTop: 20,
+    },
+    loader: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 16,
+        textAlign: 'center',
+        marginTop: 20,
+    },
+    noDetailsText: {
+        color: '#666',
+        fontSize: 16,
+        textAlign: 'center',
+        marginTop: 20,
     },
     title: {
-      fontSize: 40,
-      fontWeight: "bold",
-    },
-    reviewInput: {
-      height: 50,
-      width: 250,
-      margin: 12,
-      borderWidth: 1,
-      padding: 10,
-    },
-    ratingInput: {
-        height: 50,
-        width: 50,
-        margin: 12,
-        borderWidth: 1,
-        padding: 10,
-    },
-    columnView: {
-        flexDirection: 'column',
-    },
-    rowView: {
-        flexDirection: 'row',
-    },
-    flexBox: {
-        backgroundColor: 'lightblue',
-        width: 400,
-        borderWidth: 1,
-        margin: 8,
-        padding: 10,
-    },
-    flexBox2: {
-        backgroundColor: 'green',
-        padding: 10,
-        justifyContent: 'space-between',
+        fontSize: 35,
+        fontWeight: 'bold',
+        color: '#3a50e0',
+        marginBottom: 20,
+        marginLeft: 10,
 
     },
-    rowView2: {
-        flexDirection: 'row',
-        backgroundColor: 'lightblue',
+    text: {
+        fontSize: 16,
+        marginVertical: 10,
+        color: '#555',
+        marginLeft: 10,
     },
-    flexBox3: {
-        backgroundColor: 'lightgreen',
-        borderWidth: 1,
-        margin: 8,
-        padding: 10,
-    }
-    
-  });
-  
+    tagContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        marginTop: 10,
+        marginLeft: 10,
+    },
+    tag: {
+        backgroundColor: '#4285F4',
+        borderRadius: 5,
+        paddingVertical: 3,
+        paddingHorizontal: 7,
+        marginRight: 5,
+        marginBottom: 5,
+    },
+    map: {
+        width: '100%',
+        height: 300,
+        marginTop: 20,
+    },
+    navButton: {
+        backgroundColor: '#3a50e0',
+        marginTop: 20,
+    },
+});
