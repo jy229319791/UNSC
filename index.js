@@ -1,10 +1,11 @@
+// Hammaad
 // create node.js and express server that listens on port 3000
 const express = require("express");
 const axios = require("axios");
 const app = express();
 const port = 3000;
 const bodyParser = require("body-parser");
-const geolib = require("geolib");
+
 const Datastore = require("nedb"); // https://github.com/louischatriot/nedb#readme
 const db = new Datastore({ filename: "./parkings.db", autoload: true });
 
@@ -13,10 +14,12 @@ app.use(bodyParser.json());
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+// End Hammaad 
+
+const geolib = require("geolib");
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyAFcBA5PGa8mPKp9WZqs23rtDYsN4F4Uwo";
-// Hammaad
-// Converts address string to latitute and longitude
+// Hammaad - Converts address string to latitute and longitude
 const getCoords = async (addressString) => {
   let status;
   try {
@@ -38,12 +41,12 @@ const getCoords = async (addressString) => {
   }
 };
 
+// Hammaad - help page
 app.get("/", (req, res) => {
   res.send("Try /getParkings, /setParking, or /findParking instead! ");
 });
 
-// Hammaad
-// API to convert address to coordinates
+// Hamamad - API to convert address to coordinates
 app.get("/getCoordinates", async (req, res) => {
   const address = req.query.address;
   if (!address) {
@@ -73,6 +76,7 @@ app.get("/getParkings", (req, res) => {
       res.json(docs);
     });
 });
+// End Hammaad
 
 //Oscar
 //Saving the data from an object from the front end onto the database
