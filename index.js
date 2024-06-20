@@ -113,7 +113,7 @@ app.get("/findParking", (req, res) => {
       return;
     }
 
-    const max = 25 * 1609.34; //25 miles max distance
+    const max = 1 * 1609.34; //25 miles max distance
 
     //filter the parking within 25 miles
     const nearestParkings = parkings
