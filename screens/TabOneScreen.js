@@ -109,8 +109,8 @@ export default function TabOneScreen() {
         // Second fetch finds nearest parking locations based on x and y locations
         return fetch(
           `http://10.0.2.2:3000/findParking?x=${encodeURIComponent(
-            xLocation
-          )}&y=${encodeURIComponent(yLocation)}`,
+            x
+          )}&y=${encodeURIComponent(y)}`,
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },

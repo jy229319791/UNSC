@@ -42,6 +42,8 @@ export default function TabTwoScreen({ navigation }) {
     // End Hammaad
   });
 
+  // Oscar
+  // Handle tags
   const [tag, setTag] = useState("");
   const [tags, setTags] = useState([]);
 
