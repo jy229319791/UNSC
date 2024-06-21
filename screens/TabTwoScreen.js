@@ -159,6 +159,8 @@ export default function TabTwoScreen({ navigation }) {
         )}
         {/* End Hammaad */}
 
+        {/* Nam - Create the form to upload a new bike parking location
+         5 textboxes with title, author, rating, description, and tag*/}
         <Text style={styles.text}>Title</Text>
         <TextInput
           maxLength={30}
@@ -197,7 +199,7 @@ export default function TabTwoScreen({ navigation }) {
           value={formData.description}
         />
         <Text style={styles.text}>Tags</Text>
-
+        {/* End Nam */}
         <View style={styles.inlineContainer}>
           <TextInput
             maxLength={10}
